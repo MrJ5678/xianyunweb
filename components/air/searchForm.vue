@@ -211,7 +211,9 @@ export default {
     handleReverse() {},
 
     // 提交表单是触发
-    handleSubmit() {}
+    handleSubmit() {
+      console.log(this.form)
+    }
   },
   mounted() {}
 };
