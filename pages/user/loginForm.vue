@@ -43,14 +43,20 @@ export default {
       this.$refs["form"].validate(valid => {
         // 为true表示没有错误
         if (valid) {
-          this.$axios({
-            url: "/accounts/login",
-            method: "POST",
-            data: this.form
-          }).then(res => {
-            // console.log(res.data);
-            this.$store.commit("user/setUserInfo", res.data)
-          });
+          this.$store.dispatch("user/login", this.form)
+            .then(res => {
+              console.log(res)
+              this.$message({ type: "success", message: "登录成功！" })
+              this.$router.push('/')
+            })
+            // catch到的内容 放到 plugin/axios.js 中 全局处理错误
+            // .catch(err => {
+            //   // console.dir(err);
+            //   this.$message({
+            //     type: "warning",
+            //     message: err.response.data.message 
+            //   });
+            // });
         }
       });
     }

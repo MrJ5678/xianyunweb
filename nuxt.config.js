@@ -23,7 +23,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', type: 'type/css', href: '//at.alicdn.com/t/font_1168872_ehvuah8v57g.css' },
+      { rel: 'stylesheet', type: 'type/css', href: 'http://at.alicdn.com/t/font_1168872_ehvuah8v57g.css' },
     ]
   },
   /*
@@ -31,14 +31,17 @@ export default {
   */
   css: [
     'element-ui/lib/theme-chalk/index.css',
-    'assets/main.css'
+    'assets/main.css',
+    'assets/font.css'
   ],
   /*
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    '@/plugins/element-ui'
+    '@/plugins/element-ui',
+    { src: '@/plugins/localStorage', ssr: false },
+    '@/plugins/axios',
   ],
   /*
   ** Auto import components
