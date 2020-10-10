@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
   data() {
     return {
@@ -81,7 +83,15 @@ export default {
   },
   methods: {
     // tab切换时触发
-    handleSearchTab(item, index) {},
+    handleSearchTab(item, index) {
+      if (index === 1) {
+        this.$confirm("目前暂不支持往返，请使用单程选票！", "提示", {
+          confirmButtonText: "确定",
+          showCancelButton: false,
+          type: "warning"
+        });
+      }
+    },
 
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
@@ -115,8 +125,8 @@ export default {
       // console.log(arr)
       if (arr.length > 0) {
         // 不在下拉列表中选择，则默认选择第一项
-        this.form.destCity = arr[0].value;
-        this.form.destCode = arr[0].sort;
+        this.form.departCity = arr[0].value;
+        this.form.departCode = arr[0].sort;
       }
       cb(arr);
 
@@ -155,11 +165,11 @@ export default {
       // cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
       const arr = await this.querySearchAsync(value);
       // console.log(arr)
-      // if (arr.length > 0) {
-      //   // 不在下拉列表中选择，则默认选择第一项
-      //   this.form.destCity = arr[0].value;
-      //   this.form.destCode = arr[0].sort;
-      // }
+      if (arr.length > 0) {
+        // 不在下拉列表中选择，则默认选择第一项
+        this.form.destCity = arr[0].value;
+        this.form.destCode = arr[0].sort;
+      }
       cb(arr);
 
       // if (value) {
@@ -191,8 +201,8 @@ export default {
 
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
-        this.form.destCity = item.value;
-        this.form.destCode = item.sort;
+      this.form.departCity = item.value;
+      this.form.departCode = item.sort;
     },
 
     // 目标城市下拉选择时触发
@@ -204,15 +214,64 @@ export default {
     // 确认选择日期时触发
     handleDate(value) {
       // console.log(value)
-      this.form.departDate = moment(value).format('YYYY-MM-DD')
+      this.form.departDate = moment(value).format("YYYY-MM-DD");
     },
 
     // 触发和目标城市切换时触发
-    handleReverse() {},
+    handleReverse() {
+      const { departCity, departCode, destCity, destCode } = this.form;
+
+      this.form.departCity = destCity;
+      this.form.departCode = destCode;
+      this.form.destCity = departCity;
+      this.form.destCode = departCode;
+    },
 
     // 提交表单是触发
     handleSubmit() {
-      console.log(this.form)
+      // console.log(this.form)
+      // 表单验证数据
+      const rules = {
+        depart: {
+          value: this.form.departCity,
+          message: "请选择出发城市"
+        },
+        dest: {
+          value: this.form.destCity,
+          message: "请选择到达城市"
+        },
+        departDate: {
+          value: this.form.departDate,
+          message: "请选择出发时间"
+        }
+      };
+
+      let valid = true; // 表单验证结果
+
+      Object.keys(rules).forEach(v => {
+        // 只要有一个结果不通过，就停止循环
+        if (!valid) return;
+        const item = rules[v];
+
+        // 数据字段为空
+        if (!item.value) {
+          valid = false;
+
+          this.$confirm(item.message, "提示", {
+            confirmButtonText: "确定",
+            showCancelButton: false,
+            type: "warning"
+          });
+        }
+      });
+
+      // 不通过验证，不需要往下执行
+      if (!valid) return;
+
+      this.$router.push({
+        path: "/air/flights",
+        query: this.form
+      });
     }
   },
   mounted() {}
